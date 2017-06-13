@@ -123,6 +123,21 @@ class Color {
 
 /* utility functions */
 
+// deep copy with (proto)types too
+function deepCopy(anInstance) {
+    var incOut = Object.create(anInstance.prototype); // copy with just basic types
+  
+    // recurse as needed to copy objects in the object
+    for (var incKey in incOut)
+        if (typeof(incOut[incKey]) == "object")
+            incOut[incKey] = deepCopy(incOut[incKey]);
+    
+    return(incOut);
+} // end deep copy
+
+
+/* app functions */
+
 // draw a pixel at x,y using color
 function drawPixel(imagedata,x,y,color) {
     try {
@@ -175,8 +190,8 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
             else { // passed attribute checks
                 
                 // set up the vertical interpolation
-                var la = JSON.parse(JSON.stringify(tlAttribs));  // left attribs stringify to support deep cloning
-                var ra = JSON.parse(JSON.stringify(trAttribs));  // right attribs
+                var la = deepCopy(tlAttribs);  // left attribs stringify to support deep cloning
+                var ra = deepCopy(trAttribs);  // right attribs
                 var vDelta = 1 / (bottom-top); // norm'd vertical delta
                 var laDelta = {}, raDelta = {}; // left and right attribute deltas
                 for (var a in tlAttribs)
@@ -194,7 +209,7 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
 
                 // do the interpolation
                 for (var y=top; y<=bottom; y++) { // for pixel row
-                    ha = JSON.parse(JSON.stringify(la)); // begin with the left color
+                    ha = deepCopy(la); // begin with the left color
                     for (var a in ha)
                         if (typeof(ha[a]) == "number")
                             haDelta[a] = hDelta * (ra[a] - la[a]);
