@@ -199,7 +199,7 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
                         if (typeof(ha[a]) == "number")
                             haDelta[a] = hDelta * (ra[a] - la[a]);
                         else // assume attrib is object
-                            haDelta[a] ra[a].clone().subtract(la[a]).scale(hDelta);
+                            haDelta[a] = ra[a].clone().subtract(la[a]).scale(hDelta);
                     for (var x=left; x<=right; x++) { // for each pixel column
                         shadePixel(imagedata,x,y,ha);
                         for (var a in ha)
