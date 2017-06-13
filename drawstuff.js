@@ -144,6 +144,39 @@ function drawPixel(imagedata,x,y,color) {
         console.log(e);
     }
 } // end drawPixel
+
+// interpolate the passed axis aligned rectangle
+// assumes that the sides are all axis aligned — more logic needed for tris
+// accepts the imagedata to write to
+// accepts top, bottom, left, right coords for rect
+// accepts tl, tr, br, bl colors for rect
+// modifies passed image data
+function interpRectColor(imagedata,top,bottom,left,right,tlCol,trCol,brCol,blCol) {
+    
+    // set up the vertical interpolation
+    var lc = tlCol.clone();  // left color
+    var rc = trCol.clone();  // right color
+    var vDelta = 1 / (bottom-top); // norm'd vertical delta
+    var lcDelta = blCol.clone().subtract(tlCol).scale(vDelta); // left vert color delta
+    var rcDelta = brCol.clone().subtract(trCol).scale(vDelta); // right vert color delta
+    
+    // set up the horizontal interpolation
+    var hc = new Color(); // horizontal color
+    var hDelta = 1 / (right-left); // norm'd horizontal delta
+    var hcDelta = new Color(); // horizontal color delta
+    
+    // do the interpolation
+    for (var y=top; y<=bottom; y++) {
+        hc.copy(lc); // begin with the left color
+        hcDelta.copy(rc).subtract(lc).scale(hDelta); // reset horiz color delta
+        for (var x=left; x<=right; x++) {
+            drawPixel(imagedata,x,y,hc);
+            hc.add(hcDelta);
+        } // end horizontal
+        lc.add(lcDelta);
+        rc.add(rcDelta);
+    } // end vertical
+} // end interpRectColor
     
 
 /* main -- here is where execution begins after window load */
@@ -158,38 +191,6 @@ function main() {
     var imagedata = context.createImageData(w,h);
  
     // Define a rectangle in 2D with colors and coords at corners
-    var ulc = new Color(255,0,0,255); // upper left corner color: red
-    var urc = new Color(0,255,0,255); // upper right corner color: green
-    var llc = new Color(0,0,255,255); // lower left corner color: blue
-    var lrc = new Color(0,0,0,255); // lower right corner color: black
-    var ulx = 50, uly = 50; // upper left corner position
-    var urx = 200, ury = 50; // upper right corner position
-    var llx = 50, lly = 150; // lower left corner position
-    var lrx = 200, lry = 150; // lower right corner position
-    
-    // set up the vertical interpolation
-    var lc = ulc.clone();  // left color
-    var rc = urc.clone();  // right color
-    var vDelta = 1 / (lly-uly); // norm'd vertical delta
-    var lcDelta = llc.clone().subtract(ulc).scale(vDelta); // left vert color delta
-    var rcDelta = lrc.clone().subtract(urc).scale(vDelta); // right vert color delta
-    
-    // set up the horizontal interpolation
-    var hc = new Color(); // horizontal color
-    var hDelta = 1 / (urx-ulx); // norm'd horizontal delta
-    var hcDelta = new Color(); // horizontal color delta
-    
-    // do the interpolation
-    for (var y=uly; y<=lly; y++) {
-        hc.copy(lc); // begin with the left color
-        hcDelta.copy(rc).subtract(lc).scale(hDelta); // reset horiz color delta
-        for (var x=ulx; x<=urx; x++) {
-            drawPixel(imagedata,x,y,hc);
-            hc.add(hcDelta);
-        } // end horizontal
-        lc.add(lcDelta);
-        rc.add(rcDelta);
-    } // end vertical
-    
-    context.putImageData(imagedata, 0, 0); // display the image in the context
-}
+    interpRectColor(imagedata,50,150,50,200,new Color(255,0,0),new Color(0,255,0),new Color(0,0,255),new Color(0,0,0));
+    context.putImageData(imagedata,0,0); // display the image in the context
+} // end main
