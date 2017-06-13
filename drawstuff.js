@@ -184,6 +184,7 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
                         laDelta.a = vDelta * (blAttribs.a - tlAttribs.a);
                         raDelta.a = vDelta * (brAttribs.a - trAttribs.a);
                     } else { // assume attrib is an object
+                        console.log(blAttribs.a.constructor.name);
                         laDelta.a = blAttribs.a.clone().subtract(tlAttribs.a).scale(vDelta);
                         raDelta.a = brAttribs.a.clone().subtract(trAttribs.a).scale(vDelta);
                     } // end if attrib is an object
