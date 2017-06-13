@@ -123,7 +123,7 @@ class Color {
 
 /* utility functions */
 
-// deep copy with (proto)types too
+// deep object copy with (proto)types too
 function deepCopy(anInstance) {
     var incOut = Object.create(anInstance); // copy prototype and properties
   
@@ -176,7 +176,11 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
     // assumes attribs contains a "diffuse" property which is a Color object
     // assumes all other properties are floats
     // modifies pass image data
-    function shadePixel(imagedata,pixX,pixY,attribs) {
+    function shadePixel(imagedata,pixX,pixY,globals,attribs) {
+        var difColor = new Color();
+        
+        for (var c in difColor)
+            difColor[c] = attribs.diffuse[c] * 
         drawPixel(imagedata,pixX,pixY,attribs.diffuse);
     } // end shade pixel
     
