@@ -125,12 +125,14 @@ class Color {
 
 // deep copy with (proto)types too
 function deepCopy(anInstance) {
-    var incOut = Object.assign({},anInstance); // copy with just basic types
+    var incOut = Object.create(anInstance); // copy prototype and properties
   
-    // recurse as needed to copy objects in the object
+    // copy values, or recurse as needed to copy objects in the object
     for (var incKey in incOut)
         if (typeof(incOut[incKey]) == "object")
             incOut[incKey] = deepCopy(incOut[incKey]);
+        else
+            incOut[incKey] = anInstance[incKey];
     
     return(incOut);
 } // end deep copy
