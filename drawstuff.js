@@ -221,7 +221,7 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
     } // end try
     
     catch(e) {
-        log.console(e);
+        console.log(e);
     } // end catch
 } // end interpRect
     
