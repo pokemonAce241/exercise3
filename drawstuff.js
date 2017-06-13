@@ -145,38 +145,85 @@ function drawPixel(imagedata,x,y,color) {
     }
 } // end drawPixel
 
-// interpolate the passed axis aligned rectangle
+// shade the passed axis aligned rectangle
 // assumes that the sides are all axis aligned — more logic needed for tris
+// assumes vertices all have same number of attribs
+// assumes object properties have clone, subtract, scale and add methods
 // accepts the imagedata to write to
 // accepts top, bottom, left, right coords for rect
-// accepts tl, tr, br, bl colors for rect
+// accepts an array of vertex attribs to interpolate
 // modifies passed image data
-function interpRectColor(imagedata,top,bottom,left,right,tlCol,trCol,brCol,blCol) {
+function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttribs,blAttribs) {
     
-    // set up the vertical interpolation
-    var lc = tlCol.clone();  // left color
-    var rc = trCol.clone();  // right color
-    var vDelta = 1 / (bottom-top); // norm'd vertical delta
-    var lcDelta = blCol.clone().subtract(tlCol).scale(vDelta); // left vert color delta
-    var rcDelta = brCol.clone().subtract(trCol).scale(vDelta); // right vert color delta
+    // shade the pixel given pixel position and interp'd attribs
+    // assumes attribs contains a "diffuse" property which is a Color object
+    // assumes all other properties are floats
+    // modifies pass image data
+    function shadePixel(imagedata,pixX,pixY,attribs) {
+        drawPixel(imagedata,pixX,pixY,attribs.diffuse);
+    } // end shade pixel
     
-    // set up the horizontal interpolation
-    var hc = new Color(); // horizontal color
-    var hDelta = 1 / (right-left); // norm'd horizontal delta
-    var hcDelta = new Color(); // horizontal color delta
+    try {
+        if (   (typeof(tlAttribs) !== "object") || (typeof(trAttribs) !== "object")
+            || (typeof(brAttribs) !== "object") || (typeof(blAttribs) !== "object"))
+            throw "InterpRect: passed attributes are not objects";
+        else {
+            let tlSize = Object.keys(tlAttribs).length, trSize = Object.keys(trAttribs).length;
+            let brSize = Object.keys(brAttribs).length, blSize = Object.keys(blAttribs).length;
+            if ((tlSize !== trSize) || (tlSize !== brSize) || (tlSize !== blSize))
+                throw "InterpRect: passed attributes have different numbers of properties";
+            else { // passed attribute checks
+                
+                // set up the vertical interpolation
+                var la = JSON.parse(JSON.stringify(tlAttribs));  // left attribs stringify to support deep cloning
+                var ra = JSON.parse(JSON.stringify(trAttribs));  // right attribs
+                var vDelta = 1 / (bottom-top); // norm'd vertical delta
+                var laDelta = {}, raDelta = {}; // left and right attribute deltas
+                for (var a in tlAttribs)
+                    if (typeof(tlAttribs.a) == "number") {
+                        laDelta.a = vDelta * (blAttribs.a - tlAttribs.a);
+                        raDelta.a = vDelta * (brAttribs.a - trAttribs.a);
+                    } else { // assume attrib is an object
+                        laDelta.a = blAttribs.a.clone().subtract(tlAttribs.a).scale(vDelta);
+                        raDelta.a = brAttribs.a.clone().subtract(trAttribs.a).scale(vDelta);
+                    } // end if attrib is an object
+
+                // set up the horizontal interpolation
+                var ha = {}, haDelta = {}; // horizontal color and delta
+                var hDelta = 1 / (right-left); // norm'd horizontal delta
+
+                // do the interpolation
+                for (var y=top; y<=bottom; y++) { // for pixel row
+                    ha = JSON.parse(JSON.stringify(la)); // begin with the left color
+                    for (var a in ha)
+                        if (typeof(ha.a) == "number")
+                            haDelta.a = hDelta * (ra.a - la.a);
+                        else // assume attrib is object
+                            haDelta.a = ra.a.clone().subtract(la.a).scale(hDelta);
+                    for (var x=left; x<=right; x++) { // for each pixel column
+                        shadePixel(imagedata,x,y,ha);
+                        for (var a in ha)
+                            if (typeof(ha.a) == "number")
+                                ha.a += haDelta.a;
+                            else // assume attrib is object
+                                ha.a.add(haDelta.a);
+                    } // end for each pixel row
+                    for (var a in la)
+                        if (typeof(la.a) == "number") {
+                            la.a += laDelta.a; ra.a += raDelta.a;
+                        } else {
+                            la.a.add(laDelta.a); ra.a.add(raDelta.a);
+                        } // end if assume object
+                } // end for each pixel row
+                
+            } // end if passed attribute checks
+        } // end if all passed attributes are object
+    } // end try
     
-    // do the interpolation
-    for (var y=top; y<=bottom; y++) {
-        hc.copy(lc); // begin with the left color
-        hcDelta.copy(rc).subtract(lc).scale(hDelta); // reset horiz color delta
-        for (var x=left; x<=right; x++) {
-            drawPixel(imagedata,x,y,hc);
-            hc.add(hcDelta);
-        } // end horizontal
-        lc.add(lcDelta);
-        rc.add(rcDelta);
-    } // end vertical
-} // end interpRectColor
+    catch(e) {
+        log.console(e);
+    } // end catch
+} // end interpRect
     
 
 /* main -- here is where execution begins after window load */
@@ -191,6 +238,10 @@ function main() {
     var imagedata = context.createImageData(w,h);
  
     // Define a rectangle in 2D with colors and coords at corners
-    interpRectColor(imagedata,50,150,50,200,new Color(255,0,0),new Color(0,255,0),new Color(0,0,255),new Color(0,0,0));
+    var tlAttribs = { diffuse: new Color(255,0,0)};
+    var trAttribs = { diffuse: new Color(0,255,0)};
+    var brAttribs = { diffuse: new Color(0,0,255)};
+    var blAttribs = { diffuse: new Color(0,0,0)};
+    interpRect(imagedata,50,150,50,200,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
