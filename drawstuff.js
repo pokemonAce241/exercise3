@@ -180,13 +180,12 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
                 var vDelta = 1 / (bottom-top); // norm'd vertical delta
                 var laDelta = {}, raDelta = {}; // left and right attribute deltas
                 for (var a in tlAttribs)
-                    if (typeof(tlAttribs.a) == "number") {
-                        laDelta.a = vDelta * (blAttribs.a - tlAttribs.a);
-                        raDelta.a = vDelta * (brAttribs.a - trAttribs.a);
+                    if (typeof(tlAttribs[a]) == "number") {
+                        laDelta[a] = vDelta * (blAttribs[a] - tlAttribs[a]);
+                        raDelta[a] = vDelta * (brAttribs[a] - trAttribs[a]);
                     } else { // assume attrib is an object
-                        console.log(blAttribs[a].constructor.name);
-                        laDelta.a = blAttribs[a].clone().subtract(tlAttribs[a]).scale(vDelta);
-                        raDelta.a = brAttribs[a].clone().subtract(trAttribs[a]).scale(vDelta);
+                        laDelta[a] = blAttribs[a].clone().subtract(tlAttribs[a]).scale(vDelta);
+                        raDelta[a] = brAttribs[a].clone().subtract(trAttribs[a]).scale(vDelta);
                     } // end if attrib is an object
 
                 // set up the horizontal interpolation
@@ -197,23 +196,23 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
                 for (var y=top; y<=bottom; y++) { // for pixel row
                     ha = JSON.parse(JSON.stringify(la)); // begin with the left color
                     for (var a in ha)
-                        if (typeof(ha.a) == "number")
-                            haDelta.a = hDelta * (ra.a - la.a);
+                        if (typeof(ha[a]) == "number")
+                            haDelta[a] = hDelta * (ra[a] - la[a]);
                         else // assume attrib is object
-                            haDelta.a = ra.a.clone().subtract(la.a).scale(hDelta);
+                            haDelta[a] ra[a].clone().subtract(la[a]).scale(hDelta);
                     for (var x=left; x<=right; x++) { // for each pixel column
                         shadePixel(imagedata,x,y,ha);
                         for (var a in ha)
-                            if (typeof(ha.a) == "number")
-                                ha.a += haDelta.a;
+                            if (typeof(ha[a]) == "number")
+                                ha[a] += haDelta[a];
                             else // assume attrib is object
-                                ha.a.add(haDelta.a);
+                                ha[a].add(haDelta[a]);
                     } // end for each pixel row
                     for (var a in la)
-                        if (typeof(la.a) == "number") {
-                            la.a += laDelta.a; ra.a += raDelta.a;
+                        if (typeof(la[a]) == "number") {
+                            la[a] += laDelta[a]; ra[a] += raDelta[a];
                         } else {
-                            la.a.add(laDelta.a); ra.a.add(raDelta.a);
+                            la[a].add(laDelta[a]); ra[a].add(raDelta[a]);
                         } // end if assume object
                 } // end for each pixel row
                 
