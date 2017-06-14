@@ -313,6 +313,7 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         difColor.g = attribs.diffuse.g * globals.lightCol.g/255 * NdotL;
         difColor.b = attribs.diffuse.b * globals.lightCol.b/255 * NdotL;
         
+        difColor.toConsole();
         if (pixX > 180)
             difColor.toConsole();
         
