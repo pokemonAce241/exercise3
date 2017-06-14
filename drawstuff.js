@@ -115,7 +115,7 @@ class Color {
     
         // Send color to console
     toConsole() {
-        console.log(this.r +" "+ this.g +" "+ this.b +" "+ this.a);
+        console.log("rgba: "+ this.r +" "+ this.g +" "+ this.b +" "+ this.a);
     }  // end Color toConsole
     
 } // end color class
@@ -309,8 +309,9 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         var NdotL = Vector.dot(lVect,new Vector(0,0,1)); // rect in xy plane
         
         // calc diffuse color
-        for (var c in difColor)
-            difColor[c] = attribs.diffuse[c] * globals.lightCol[c]/255 * NdotL;
+        difColor.r = attribs.diffuse.r * globals.lightCol.r/255 * NdotL;
+        difColor.g = attribs.diffuse.g * globals.lightCol.g/255 * NdotL;
+        difColor.b = attribs.diffuse.b * globals.lightCol.b/255 * NdotL;
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
