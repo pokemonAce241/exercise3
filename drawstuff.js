@@ -178,10 +178,20 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
     // modifies pass image data
     function shadePixel(imagedata,pixX,pixY,globals,attribs) {
         var difColor = new Color();
+        var worldLoc = new Vector(pixX,pixY,0);
+        var lVect = new Vector();
         
+        // get light vector
+        lVect.copy(globals.light);
+        lVect = Vector.subtract(lVect,worldLoc);
+        lVect = Vector.normalize(lVect);
+        var NdotL = Vector.dot(lVect,new Vector(0,0,1));
+        
+        // calc diffuse color
         for (var c in difColor)
-            difColor[c] = attribs.diffuse[c] * 
-        drawPixel(imagedata,pixX,pixY,attribs.diffuse);
+            difColor[c] = attribs.diffuse[c] * NdotL;
+        
+        drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
     
     try {
