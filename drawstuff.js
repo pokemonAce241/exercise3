@@ -122,7 +122,7 @@ class Color {
 
 // Vector class
 class Vector { 
-    constructor(x,y,z) {
+    constructor(x=0,y=0,z=0) {
         this.set(x,y,z);
     } // end constructor
     
