@@ -120,6 +120,126 @@ class Color {
     
 } // end color class
 
+// Vector class
+class Vector { 
+    constructor(x,y,z) {
+        this.set(x,y,z);
+    } // end constructor
+    
+    // sets the components of a vector
+    set(x,y,z) {
+        try {
+            if ((typeof(x) !== "number") || (typeof(y) !== "number") || (typeof(z) !== "number"))
+                throw "vector component not a number";
+            else
+                this.x = x; this.y = y; this.z = z; 
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+        }
+    } // end vector set
+    
+    // copy the passed vector into this one
+    copy(v) {
+        try {
+            if (!(v instanceof Vector))
+                throw "Vector.copy: non-vector parameter";
+            else
+                this.x = v.x; this.y = v.y; this.z = v.z;
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+        }
+    }
+    
+    toConsole(prefix) {
+        console.log(prefix+"["+this.x+","+this.y+","+this.z+"]");
+    } // end to console
+    
+    // static dot method
+    static dot(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.dot: non-vector parameter";
+            else
+                return(v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(NaN);
+        }
+    } // end dot static method
+    
+    // static add method
+    static add(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.add: non-vector parameter";
+            else
+                return(new Vector(v1.x+v2.x,v1.y+v2.y,v1.z+v2.z));
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end add static method
+
+    // static subtract method, v1-v2
+    static subtract(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.subtract: non-vector parameter";
+            else {
+                var v = new Vector(v1.x-v2.x,v1.y-v2.y,v1.z-v2.z);
+                //v.toConsole("Vector.subtract: ");
+                return(v);
+            }
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end subtract static method
+
+    // static scale method
+    static scale(c,v) {
+        try {
+            if (!(typeof(c) === "number") || !(v instanceof Vector))
+                throw "Vector.scale: malformed parameter";
+            else
+                return(new Vector(c*v.x,c*v.y,c*v.z));
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end scale static method
+    
+    // static normalize method
+    static normalize(v) {
+        try {
+            if (!(v instanceof Vector))
+                throw "Vector.normalize: parameter not a vector";
+            else {
+                var lenDenom = 1/Math.sqrt(Vector.dot(v,v));
+                return(Vector.scale(lenDenom,v));
+            }
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end scale static method
+    
+} // end Vector class
+
 
 /* utility functions */
 
@@ -168,9 +288,10 @@ function drawPixel(imagedata,x,y,color) {
 // assumes object properties have clone, subtract, scale and add methods
 // accepts the imagedata to write to
 // accepts top, bottom, left, right coords for rect
-// accepts an array of vertex attribs to interpolate
+// accepts an object of global info for shading
+// accepts an object of vertex attribs to interpolate
 // modifies passed image data
-function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttribs,blAttribs) {
+function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,brAttribs,blAttribs) {
     
     // shade the pixel given pixel position and interp'd attribs
     // assumes attribs contains a "diffuse" property which is a Color object
@@ -178,14 +299,14 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
     // modifies pass image data
     function shadePixel(imagedata,pixX,pixY,globals,attribs) {
         var difColor = new Color();
-        var worldLoc = new Vector(pixX,pixY,0);
+        var worldLoc = new Vector(pixX,pixY,0); // assume rect at z=0
         var lVect = new Vector();
         
         // get light vector
         lVect.copy(globals.light);
         lVect = Vector.subtract(lVect,worldLoc);
         lVect = Vector.normalize(lVect);
-        var NdotL = Vector.dot(lVect,new Vector(0,0,1));
+        var NdotL = Vector.dot(lVect,new Vector(0,0,1)); // rect in xy plane
         
         // calc diffuse color
         for (var c in difColor)
@@ -232,7 +353,7 @@ function interpRect(imagedata,top,bottom,left,right,tlAttribs,trAttribs,brAttrib
                         else // assume attrib is object
                             haDelta[a] = ra[a].clone().subtract(la[a]).scale(hDelta);
                     for (var x=left; x<=right; x++) { // for each pixel column
-                        shadePixel(imagedata,x,y,ha);
+                        shadePixel(imagedata,x,y,globals,ha);
                         for (var a in ha)
                             if (typeof(ha[a]) == "number")
                                 ha[a] += haDelta[a];
@@ -269,6 +390,7 @@ function main() {
     var imagedata = context.createImageData(w,h);
  
     // Define a rectangle in 2D with colors and coords at corners
+    var globals = = { light: new Vector(50,50,100); // light over left upper rect
     var tlAttribs = { diffuse: new Color(255,0,0)};
     var trAttribs = { diffuse: new Color(0,255,0)};
     var brAttribs = { diffuse: new Color(0,0,255)};
