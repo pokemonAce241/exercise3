@@ -392,10 +392,10 @@ function main() {
     // Define a rectangle in 2D with colors and coords at corners
     var globals = { lightPos: new Vector(50,50,100),   // light over left upper rect
                     lightCol: new Color(255,255,255)}; // light is white
-    var tlAttribs = { diffuse: new Color(255,0,0)};
-    var trAttribs = { diffuse: new Color(0,255,0)};
-    var brAttribs = { diffuse: new Color(0,0,255)};
-    var blAttribs = { diffuse: new Color(0,0,0)};
+    var tlAttribs = { diffuse: new Color(255,255,255)};
+    var trAttribs = { diffuse: new Color(255,255,255)};
+    var brAttribs = { diffuse: new Color(255,255,255)};
+    var blAttribs = { diffuse: new Color(255,255,255)};
     interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
