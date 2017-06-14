@@ -392,8 +392,8 @@ function main() {
     // Define a rectangle in 2D with colors and coords at corners
     var globals = { lightPos: new Vector(100,100,50),   // light over left upper rect
                     lightCol: new Color(255,255,255)}; // light is white
-    var tlAttribs = { diffuse: new Color(255,0,0)};
-    var trAttribs = { diffuse: new Color(255,0,0)};
+    var tlAttribs = { diffuse: new Color(0,0,255)};
+    var trAttribs = { diffuse: new Color(0,0,255)};
     var brAttribs = { diffuse: new Color(0,255,0)};
     var blAttribs = { diffuse: new Color(0,255,0)};
     interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
