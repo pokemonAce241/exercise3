@@ -395,6 +395,6 @@ function main() {
     var trAttribs = { diffuse: new Color(0,255,0)};
     var brAttribs = { diffuse: new Color(0,0,255)};
     var blAttribs = { diffuse: new Color(0,0,0)};
-    interpRect(imagedata,50,150,50,200,tlAttribs,trAttribs,brAttribs,blAttribs);
+    interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
