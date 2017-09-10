@@ -301,13 +301,12 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         var difColor = new Color();
         var worldLoc = new Vector(pixX,pixY,0); // assume rect at z=0
         var lVect = new Vector();
-        var nVect = new Vector();
         
         // get light vector
         lVect.copy(globals.lightPos);
         lVect = Vector.subtract(lVect,worldLoc);
-        nVect = Vector.normalize(lVect);
-        var NdotL = Vector.dot(nVect,lVect); // rect in xy plane
+        lVect = Vector.normalize(lVect);
+        var NdotL = Vector.dot(lVect,new Vector(0,0,1); // rect in xy plane
         
         // calc diffuse color
         difColor.r = attribs.diffuse.r * globals.lightCol.r/255 * NdotL;
