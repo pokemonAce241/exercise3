@@ -309,25 +309,23 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         var NdotL = Vector.dot(lVect,new Vector(0,0,1)); // rect in xy plane
         
        // calc specular light
-        var reflect = new Vector();
-        reflect.copy(lVect);
+        var reflect = new Vector(0,0,1);
         reflect = Vector.scale(2,reflect);
         reflect = Vector.scale(NdotL,reflect);
-        var light = new Vector();
-        light.copy(globals.lightPos);
-        light = Vector.subtract(light,worldLoc);
-        reflect = Vector.subtract(reflect,light);
+        reflect = Vector.subtract(reflect,lVect);
+        
         var eye = new Vector(100,100,50);
         eye = Vector.subtract(eye,worldLoc);
+        eye = Vector.normalize(eye);
         var n = 10;
-        reflect = Vector.dot(reflect,eye);
-        reflect = Math.pow(reflect,n);
+        var spec = Vector.dot(reflect,eye);
+        spec = Math.pow(spec,n);
         
         
         // calc diffuse color
-        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255);
-        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255);
-        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255);
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255) + (attribs.specular.r * globals.lightCol.r/255 * spec);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255) + (attribs.specular.g * globals.lightCol.g/255 * spec);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255) + (attribs.specular.b * globals.lightCol.b/255 * spec);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
@@ -411,16 +409,16 @@ function main() {
                     lightCol: new Color(255,255,255)}; // light is white
     var tlAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(26,26,26),
-                      specular: new Color(255,255,255)};    // all four rect verts blue
+                      specular: new Color(75,75,75)};    // all four rect verts blue
     var trAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(26,26,26),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(75,75,75)};
     var brAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(26,26,26),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(75,75,75)};
     var blAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(26,26,26),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(75,75,75)};
     interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
