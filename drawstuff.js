@@ -321,9 +321,9 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         
         
         // calc diffuse color
-        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.diffuse.r * globals.lightCol.r/255);
-        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.diffuse.g * globals.lightCol.g/255);
-        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.diffuse.b * globals.lightCol.b/255);
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
@@ -405,10 +405,14 @@ function main() {
     // Define a rectangle in 2D with colors and coords at corners
     var globals = { lightPos: new Vector(150,150,15),  // light over left upper rect
                     lightCol: new Color(255,255,255)}; // light is white
-    var tlAttribs = { diffuse: new Color(0,0,255)};    // all four rect verts blue
-    var trAttribs = { diffuse: new Color(0,0,255)};
-    var brAttribs = { diffuse: new Color(0,0,255)};
-    var blAttribs = { diffuse: new Color(0,0,255)};
+    var tlAttribs = { diffuse: new Color(0,0,255),
+                      ambient: new Color(0,255,0)};    // all four rect verts blue
+    var trAttribs = { diffuse: new Color(0,0,255),
+                      ambient: new Color(0,255,0)};
+    var brAttribs = { diffuse: new Color(0,0,255),
+                      ambient: new Color(0,255,0)};
+    var blAttribs = { diffuse: new Color(0,0,255),
+                      ambient: new Color(0,255,0)};
     interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
