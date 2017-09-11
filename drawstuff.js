@@ -308,10 +308,22 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         lVect = Vector.normalize(lVect);
         var NdotL = Vector.dot(lVect,new Vector(0,0,1)); // rect in xy plane
         
+       // calc specular light
+        var reflect = new Vector();
+        reflect.copy(lVect);
+        reflect = Vector.scale(2,reflect);
+        reflect = Vector.scale(NdotL,reflect);
+        reflect = Vector.subtract(reflect,new Vector(0,0,1));
+        var eye = new Vector(100,100,50);
+        var n = 10;
+        reflect = Vector.dot(reflect,eye);
+        reflect = Math.pow(reflect,n);
+        
+        
         // calc diffuse color
-        difColor.r = attribs.diffuse.r * globals.lightCol.r/255 * NdotL;
-        difColor.g = attribs.diffuse.g * globals.lightCol.g/255 * NdotL;
-        difColor.b = attribs.diffuse.b * globals.lightCol.b/255 * NdotL;
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL)+(globals.lightCol.r * globals.lightCol.r/255 * reflect);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL)+(globals.lightCol.g * globals.lightCol.g/255 * reflect);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL)+(globals.lightCol.b * globals.lightCol.b/255 * reflect);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
