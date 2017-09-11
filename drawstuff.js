@@ -321,9 +321,9 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         
         
         // calc diffuse color
-        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255) + (attribs.specular.r * globals.lightCol.r/255);
-        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255) + (attribs.specular.g * globals.lightCol.g/255);
-        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255) + (attribs.specular.b * globals.lightCol.b/255);
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255) + (attribs.specular.r * globals.lightCol.r/255 * reflect);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255) + (attribs.specular.g * globals.lightCol.g/255 * reflect);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255) + (attribs.specular.b * globals.lightCol.b/255 * reflect);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
@@ -407,16 +407,16 @@ function main() {
                     lightCol: new Color(255,255,255)}; // light is white
     var tlAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(0,255,0),
-                      specular: new Color(255,255,255)};    // all four rect verts blue
+                      specular: new Color(255,0,0)};    // all four rect verts blue
     var trAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(0,255,0),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(255,0,0)};
     var brAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(0,255,0),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(255,0,0)};
     var blAttribs = { diffuse: new Color(0,0,255),
                       ambient: new Color(0,255,0),
-                      specular: new Color(255,255,255)};
+                      specular: new Color(255,0,0)};
     interpRect(imagedata,50,150,50,200,globals,tlAttribs,trAttribs,brAttribs,blAttribs);
     context.putImageData(imagedata,0,0); // display the image in the context
 } // end main
