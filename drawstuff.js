@@ -321,9 +321,9 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         
         
         // calc diffuse color
-        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL);
-        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL);
-        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL);
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.diffuse.r * globals.lightCol.r/255);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.diffuse.g * globals.lightCol.g/255);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.diffuse.b * globals.lightCol.b/255);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
