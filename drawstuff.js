@@ -313,9 +313,11 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         reflect.copy(lVect);
         reflect = Vector.scale(2,reflect);
         reflect = Vector.scale(NdotL,reflect);
-        reflect = Vector.subtract(reflect,new Vector(0,0,1));
-        var eye = new Vector();
-        eye.copy(globals.lightPos);
+        var light = new Vector();
+        light.copy(globals.lightPos);
+        light = Vector.subtract(light,worldLoc);
+        reflect = Vector.subtract(reflect,light);
+        var eye = new Vector(100,100,50);
         eye = Vector.subtract(eye,worldLoc);
         var n = 10;
         reflect = Vector.dot(reflect,eye);
@@ -323,9 +325,9 @@ function interpRect(imagedata,top,bottom,left,right,globals,tlAttribs,trAttribs,
         
         
         // calc diffuse color
-        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255);
-        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255);
-        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255);
+        difColor.r = (attribs.diffuse.r * globals.lightCol.r/255 * NdotL) + (attribs.ambient.r * globals.lightCol.r/255) + (attribs.specular.r * globals.lightCol.r/255 * reflect);
+        difColor.g = (attribs.diffuse.g * globals.lightCol.g/255 * NdotL) + (attribs.ambient.g * globals.lightCol.g/255) + (attribs.specular.g * globals.lightCol.g/255 * reflect);
+        difColor.b = (attribs.diffuse.b * globals.lightCol.b/255 * NdotL) + (attribs.ambient.b * globals.lightCol.b/255) + (attribs.specular.b * globals.lightCol.b/255 * reflect);
         
         drawPixel(imagedata,pixX,pixY,difColor);
     } // end shade pixel
